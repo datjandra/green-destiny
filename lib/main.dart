@@ -1,12 +1,22 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
-import 'dart:ui';
+
+import 'scenario.dart';
+import 'painter.dart';
+import 'splash.dart';
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  // Callback function to navigate to the GamePage
+  void navigateToGamePage(BuildContext context) {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => GamePage(scenarios: scenarios)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -14,23 +24,29 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: GamePage(),
+      home: SplashScreen(
+          navigateToGamePage), // Pass the callback function to SplashScreen,
     );
   }
 }
 
 class GamePage extends StatefulWidget {
+  final List<Scenario> scenarios;
+
+  GamePage({required this.scenarios});
+
   @override
-  _GamePageState createState() => _GamePageState();
+  _GamePageState createState() => _GamePageState(scenarios: scenarios);
 }
 
 class _GamePageState extends State<GamePage>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
+  late TemporalShiftPainter _temporalShiftPainter;
 
-  final double minRadius = 15.0; // Set min radius value
-  final double maxRadius = 30.0; // Set max radius value
+  final double minRadius = 10.0; // Set min radius value
+  final double maxRadius = 20.0; // Set max radius value
 
   double globalTemperature = 15.0; // Initial global temperature
   double winThreshold =
@@ -42,128 +58,13 @@ class _GamePageState extends State<GamePage>
   double playerProbabilityPowerLevel = 1.0; // Initial probability power level
   double sustainabilityOveruseFactor =
       0.1; // Factor to adjust globalSustainabilityIndex when power overused
-  List<Scenario> scenarios = [
-    Scenario(
-        name: 'Recycling campaign',
-        temperatureImpact: -0.3,
-        sustainabilityImpact: 0.05),
-    Scenario(
-        name: 'Planting trees',
-        temperatureImpact: -0.4,
-        sustainabilityImpact: 0.08),
-    Scenario(
-      name: 'Renewable Energy Investment',
-      temperatureImpact: -0.6, // Moderate impact on reducing temperature
-      sustainabilityImpact:
-          0.2, // Significant positive impact on sustainability
-    ),
-    Scenario(
-      name: 'Community Garden Project',
-      temperatureImpact: -0.5, // Moderate impact on reducing temperature
-      sustainabilityImpact: 0.12, // Moderate positive impact on sustainability
-    ),
-    Scenario(
-      name: 'Carbon Capture Technology Implementation',
-      temperatureImpact:
-          -0.9, // Complex feat with high impact on reducing temperature
-      sustainabilityImpact:
-          0.25, // Significant positive impact on sustainability
-    ),
-    Scenario(
-      name: 'Government Policy on Carbon Emissions',
-      temperatureImpact:
-          -0.7, // Complex feat with moderate impact on reducing temperature
-      sustainabilityImpact:
-          0.3, // Significant positive impact on sustainability
-    ),
-    Scenario(
-      name: 'Burning fossil fuels',
-      temperatureImpact: 0.2, // slightly raise temperature
-      sustainabilityImpact: -0.1, // slightly reduce sustainability
-    ),
-    Scenario(
-      name: 'Deforestation',
-      temperatureImpact: 0.3, // slightly raise temperature
-      sustainabilityImpact: -0.15, // slightly reduce sustainability
-    ),
-    Scenario(
-      name: 'Industrial pollution',
-      temperatureImpact: 0.15, // slightly raise temperature
-      sustainabilityImpact: -0.08, // slightly reduce sustainability
-    ),
-    Scenario(
-      name: 'Single-use Plastic Usage',
-      temperatureImpact: 0.1, // Increase global temperature slightly
-      sustainabilityImpact: -0.05, // Reduce sustainability slightly
-    ),
-    Scenario(
-      name: 'Landfill Expansion',
-      temperatureImpact: 0.2, // Increase global temperature slightly
-      sustainabilityImpact: -0.08, // Reduce sustainability slightly
-    ),
-    Scenario(
-      name: 'Excessive Water Consumption',
-      temperatureImpact: 0.15, // Increase global temperature slightly
-      sustainabilityImpact: -0.06, // Reduce sustainability slightly
-    ),
-    Scenario(
-      name: 'Mass Deforestation',
-      temperatureImpact: 0.5, // Increase global temperature moderately
-      sustainabilityImpact: -0.2, // Moderate negative impact on sustainability
-    ),
-    Scenario(
-      name: 'Large-scale Industrial Emissions',
-      temperatureImpact: 0.6, // Increase global temperature moderately
-      sustainabilityImpact: -0.25, // Moderate negative impact on sustainability
-    ),
-    Scenario(
-      name: 'Expansion of Coal Mining',
-      temperatureImpact: 0.7, // Increase global temperature moderately
-      sustainabilityImpact: -0.3, // Moderate negative impact on sustainability
-    ),
-    Scenario(
-      name: 'Oil Spill Pollution',
-      temperatureImpact: 0.4, // Increase global temperature moderately
-      sustainabilityImpact: -0.18, // Moderate negative impact on sustainability
-    ),
-    Scenario(
-      name: 'Urban Sprawl',
-      temperatureImpact: 0.3, // Increase global temperature moderately
-      sustainabilityImpact: -0.15, // Moderate negative impact on sustainability
-    ),
-    Scenario(
-      name: 'Intensive Livestock Farming',
-      temperatureImpact: 0.6, // Increase global temperature moderately
-      sustainabilityImpact: -0.28, // Moderate negative impact on sustainability
-    ),
-    Scenario(
-      name: 'Expansion of Oil Drilling',
-      temperatureImpact: 0.8, // Increase global temperature signficantly
-      sustainabilityImpact: -0.35, // Decrease sustainability significantly
-    ),
-    Scenario(
-      name: 'Deforestation for Agriculture',
-      temperatureImpact: 0.9, // Increase global temperature signficantly
-      sustainabilityImpact: -0.4, // Decrease sustainability significantly
-    ),
-    Scenario(
-      name: 'Increased Urbanization',
-      temperatureImpact: 0.7, // Increaes global temperature moderately
-      sustainabilityImpact: -0.32, // Decrease sustainability significantly
-    ),
-    Scenario(
-      name: 'Expansion of Cement Production',
-      temperatureImpact: 0.75, // Increase global temperature signficantly
-      sustainabilityImpact: -0.36, // Decrease sustainability significantly
-    ),
-    Scenario(
-      name: 'Industrial Chemical Waste Dumping',
-      temperatureImpact: 0.85, // Increase global temperature signficantly
-      sustainabilityImpact: -0.38, // Decrease sustainability significantly
-    )
-  ];
+
   String currentScenario = ''; // Initial scenario
   bool gameEnded = false; // Flag to track game state
+  final List<Scenario> scenarios; // Add scenarios as a class variable
+
+  _GamePageState(
+      {required this.scenarios}); // Constructor with scenarios argument
 
   void executeAction(
       bool alterProbability, String selectedScenario, int direction) {
@@ -171,16 +72,16 @@ class _GamePageState extends State<GamePage>
       restartGame();
     }
 
-    _controller.reset(); // Reset the animation
-    _controller.forward(); // Start the animation again
-
     Scenario scenario = scenarios.firstWhere((s) => s.name == selectedScenario);
 
     // Execute action based on scenario and power level
     if (alterProbability) {
+      _controller.reset(); // Reset the animation
+      _controller.forward(); // Start the animation again
+
       sustainabilityOveruseFactor += 0.1;
-      double successProbability = min(playerProbabilityPowerLevel * 0.5,
-          1.0); // Adjust the success probability
+      double successProbability =
+          calculateSuccessProbability(scenario, playerProbabilityPowerLevel);
       if (Random().nextDouble() < successProbability) {
         adjustGlobalTemperature(scenario.temperatureImpact *
             playerProbabilityPowerLevel *
@@ -225,6 +126,22 @@ class _GamePageState extends State<GamePage>
     selectRandomScenario();
   }
 
+  double calculateSuccessProbability(
+      Scenario scenario, double playerProbabilityPowerLevel) {
+    // Adjust success probability based on impacts
+    double temperatureFactor = 1 - scenario.temperatureImpact.abs();
+    double sustainabilityFactor = 1 - scenario.sustainabilityImpact.abs();
+
+    // Calculate combined factor
+    double combinedFactor = playerProbabilityPowerLevel *
+        (temperatureFactor + sustainabilityFactor) /
+        2;
+
+    // Calculate success probability
+    double successProbability = min(combinedFactor, 1.0);
+    return successProbability;
+  }
+
   void adjustGlobalTemperature(double adjustment) {
     setState(() {
       globalTemperature += adjustment;
@@ -256,7 +173,7 @@ class _GamePageState extends State<GamePage>
         return AlertDialog(
           title: Text(win
               ? 'Congratulations! The world is at peace.'
-              : 'Game Over! The world is in chaos.'),
+              : 'Game over! The world is in chaos.'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -298,6 +215,13 @@ class _GamePageState extends State<GamePage>
     _controller.forward().whenComplete(() {
       _controller.reverse(); // Reverse animation after 1 second
     });
+
+    // Initialize TemporalShiftPainter
+    _temporalShiftPainter = TemporalShiftPainter(
+      initialAnimationValue: _animation.value,
+      minRadius: minRadius,
+      maxRadius: maxRadius,
+    );
   }
 
   @override
@@ -366,7 +290,7 @@ class _GamePageState extends State<GamePage>
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              'Current Scenario: $currentScenario',
+              'Scenario: $currentScenario',
               style: TextStyle(fontSize: 20),
             ),
             SizedBox(height: 20),
@@ -495,11 +419,11 @@ class _GamePageState extends State<GamePage>
               child: AnimatedBuilder(
                 animation: _controller,
                 builder: (context, child) {
+                  _temporalShiftPainter.animationValue = _animation.value;
                   return CustomPaint(
                     size: Size(maxRadius,
                         maxRadius), // Size of the custom graphical object
-                    painter: TemporalShiftPainter(_animation.value,
-                        minRadius: minRadius, maxRadius: maxRadius),
+                    painter: _temporalShiftPainter,
                   );
                 },
               ),
@@ -515,43 +439,5 @@ class _GamePageState extends State<GamePage>
         ),
       ),
     );
-  }
-}
-
-class Scenario {
-  final String name;
-  final double temperatureImpact;
-  final double sustainabilityImpact;
-
-  Scenario(
-      {required this.name,
-      required this.temperatureImpact,
-      required this.sustainabilityImpact});
-}
-
-class TemporalShiftPainter extends CustomPainter {
-  final double animationValue;
-  final double minRadius;
-  final double maxRadius;
-
-  TemporalShiftPainter(this.animationValue,
-      {required this.minRadius, required this.maxRadius});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    double radius;
-    if (animationValue < 0.5) {
-      radius = lerpDouble(minRadius, maxRadius, animationValue * 2)!;
-    } else {
-      radius = lerpDouble(maxRadius, minRadius, (animationValue - 0.5) * 2)!;
-    }
-
-    final Paint paint = Paint()..color = Colors.green;
-    canvas.drawCircle(Offset(size.width / 2, size.height / 2), radius, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
   }
 }
