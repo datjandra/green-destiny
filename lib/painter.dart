@@ -26,18 +26,18 @@ class TemporalShiftPainter extends CustomPainter {
     final Paint centerPaint = Paint()..color = Colors.green;
     canvas.drawCircle(center, radius, centerPaint);
 
-// Draw the glow effect with variable opacity based on radius
-    final double glowOpacity =
-        1.0 - (radius - minRadius) / (maxRadius - minRadius);
-    final Paint glowPaint = Paint()
-      ..color = Colors.green.withOpacity(glowOpacity.clamp(0.0, 1.0));
-    final Paint particlePaint = glowPaint;
-
     // Draw particles within the glow effect and rotate them around the big circle
-    const int numParticles = 8;
+    const int numParticles = 6;
     const double angleIncrement = 2 * pi / numParticles;
     const double particleRadius = 5.0;
     double particleDistance = radius * 1.5;
+
+    // Draw the glow effect with variable opacity based on radius
+    final double glowOpacity =
+        1.0 - (radius - minRadius) / (maxRadius - minRadius);
+    final Paint glowPaint = Paint()
+      ..color = Colors.green.withOpacity(glowOpacity.clamp(0.5, 1.0))
+      ..strokeWidth = particleRadius * 2; // Set the stroke width;
 
     bool clockwise = clockwiseRotation();
     for (int i = 0; i < numParticles; i++) {
@@ -53,7 +53,14 @@ class TemporalShiftPainter extends CustomPainter {
       final Offset particleCenter = center +
           Offset(cos(rotationAngle) * particleDistance,
               sin(rotationAngle) * particleDistance);
-      canvas.drawCircle(particleCenter, particleRadius, particlePaint);
+      canvas.drawCircle(particleCenter, particleRadius, centerPaint);
+
+      // Draw particle trails
+      final double prevX =
+          center.dx + cos(rotationAngle - angleIncrement) * particleDistance;
+      final double prevY =
+          center.dy + sin(rotationAngle - angleIncrement) * particleDistance;
+      canvas.drawLine(Offset(prevX, prevY), particleCenter, glowPaint);
     }
   }
 

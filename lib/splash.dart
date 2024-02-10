@@ -24,8 +24,9 @@ class SplashScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                      width: 200, // Adjust the width as needed
-                      height: 200, // Adjust the height as needed
+                      constraints: BoxConstraints(
+                          maxWidth: 200,
+                          maxHeight: 200), // Adjust size constraints as needed
                       child: Image.asset(
                         'assets/images/portrait.png',
                         fit: BoxFit
@@ -43,7 +44,7 @@ class SplashScreen extends StatelessWidget {
                     'Boost positive events that reduce global temperatures and weaken negative '
                     'ones that raise them. You can choose to do nothing, but beware of chaos from high temperatures. '
                     'Your power strengthens with each use, but more influential scenarios require more power to '
-                    'change. Be careful, as your power affects reality itself and excessive use drains resources and leads to chaos.',
+                    'change. Be careful, as your power affects the fabric of reality itself and excessive use drains resources and leads to chaos.',
                     style: TextStyle(fontSize: 16),
                   ),
                   SizedBox(height: 20),

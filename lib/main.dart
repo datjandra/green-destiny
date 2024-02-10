@@ -187,9 +187,13 @@ class _GamePageState extends State<GamePage>
     showDialog(
       context: context,
       builder: (BuildContext context) {
+        String dialogImage =
+            (win ? 'assets/images/peace.png' : 'assets/images/chaos.png');
+        String dialogText = (win
+            ? 'Congratulations! The world is at peace.'
+            : 'Game over! The world is in chaos.');
         return FutureBuilder(
-          future: _getImageAsset(
-              win ? 'assets/images/peace.png' : 'assets/images/chaos.png'),
+          future: _getImageAsset(dialogImage),
           builder: (BuildContext context, AsyncSnapshot<Image> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return CircularProgressIndicator(); // Placeholder while loading
@@ -197,10 +201,16 @@ class _GamePageState extends State<GamePage>
               return Text('Error loading image');
             } else {
               return AlertDialog(
-                title: Text(win
-                    ? 'Congratulations! The world is at peace.'
-                    : 'Game over! The world is in chaos.'),
-                content: snapshot.data, // Show the image
+                title: Text(dialogText),
+                content: Container(
+                    constraints: BoxConstraints(
+                        maxWidth: 200,
+                        maxHeight: 200), // Adjust size constraints as needed
+                    child: Image.asset(
+                      dialogImage,
+                      fit: BoxFit
+                          .contain, // Ensure the image fits within the container
+                    )), // Show the image
                 actions: <Widget>[
                   TextButton(
                     onPressed: () {
