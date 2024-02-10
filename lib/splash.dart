@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class SplashScreen extends StatelessWidget {
   final Function navigateToGamePage;
@@ -8,55 +9,63 @@ class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Welcome to Green Destiny!',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 20),
-            // Add your instructions here
-            _buildInstructionBullet(
-                'Step into the shoes of Green Destiny, a hero with the awesome power to alter probabilities.'),
-            _buildInstructionBullet(
-                'Face different scenarios affecting the world\'s temperature and sustainability in negative or positive ways.'),
-            _buildInstructionBullet(
-                'Use your power to boost or weaken the impact of each scenario, or choose to do nothing.'),
-            _buildInstructionBullet(
-                'Your power grows stronger each time you use it.'),
-            _buildInstructionBullet(
-                'Keep in mind that tougher scenarios require a higher power level to influence.'),
-            _buildInstructionBullet(
-                'Be careful! Using your power too much drains the planet\'s resources and causes chaos.'),
-            _buildInstructionBullet(
-                'Lower the global temperature by boosting positive events and weakening negative scenarios using your unique abilities.'),
-            _buildInstructionBullet(
-                'But watch out! Letting the temperature rise too much will bring chaos.'),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                navigateToGamePage(context); // Invoke the callback function
-              },
-              child: Text('Start'),
-            ),
-          ],
-        ),
+      body: FutureBuilder(
+        future: _getImageAsset(
+            'assets/images/portrait.png'), // Your method to load the image asynchronously
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator(); // Show a loading indicator while waiting for the image to load
+          } else if (snapshot.hasError) {
+            return Text(
+                'Error loading image'); // Show an error message if image loading fails
+          } else {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                      width: 200, // Adjust the width as needed
+                      height: 200, // Adjust the height as needed
+                      child: Image.asset(
+                        'assets/images/portrait.png',
+                        fit: BoxFit
+                            .contain, // Ensure the image fits within the container
+                      )),
+                  SizedBox(height: 20),
+                  Text(
+                    'Welcome to Green Destiny!',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    'Your mission is to lower global temperatures using probability-altering powers. '
+                    'Encounter various scenarios affecting global temperatures and sustainability. '
+                    'Boost positive events that reduce global temperatures and weaken negative '
+                    'ones that raise them. You can choose to do nothing, but beware of chaos from high temperatures. '
+                    'Your power strengthens with each use, but more influential scenarios require more power to '
+                    'change. Be careful, as your power affects reality itself and excessive use drains resources and leads to chaos.',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      navigateToGamePage(
+                          context); // Invoke the callback function
+                    },
+                    child: Text('Start'),
+                  ),
+                ],
+              ),
+            );
+          }
+        },
       ),
     );
   }
 
-  Widget _buildInstructionBullet(String text) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5),
-      child: Row(
-        children: [
-          Icon(Icons.check_circle, color: Colors.green),
-          SizedBox(width: 10),
-          Expanded(child: Text(text)),
-        ],
-      ),
-    );
+  Future<Image> _getImageAsset(String assetPath) async {
+    final ByteData data = await rootBundle.load(assetPath);
+    final Uint8List bytes = data.buffer.asUint8List();
+    return Image.memory(bytes);
   }
 }

@@ -34,3 +34,4 @@ flutter:
   assets:
     - assets/images/chaos.png
     - assets/images/peace.png
+    - assets/images/portrait.png
