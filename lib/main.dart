@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:math';
 
 import 'scenario.dart';
@@ -43,7 +44,6 @@ class _GamePageState extends State<GamePage>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
-  late TemporalShiftPainter _temporalShiftPainter;
 
   final double minRadius = 10.0; // Set min radius value
   final double maxRadius = 20.0; // Set max radius value
@@ -61,10 +61,15 @@ class _GamePageState extends State<GamePage>
 
   String currentScenario = ''; // Initial scenario
   bool gameEnded = false; // Flag to track game state
+  bool clockwiseDir = true;
   final List<Scenario> scenarios; // Add scenarios as a class variable
 
   _GamePageState(
       {required this.scenarios}); // Constructor with scenarios argument
+
+  bool clockwiseRotation() {
+    return clockwiseDir;
+  }
 
   void executeAction(
       bool alterProbability, String selectedScenario, int direction) {
@@ -76,6 +81,12 @@ class _GamePageState extends State<GamePage>
 
     // Execute action based on scenario and power level
     if (alterProbability) {
+      if (direction > 0) {
+        clockwiseDir = true;
+      } else if (direction < 0) {
+        clockwiseDir = false;
+      }
+
       _controller.reset(); // Reset the animation
       _controller.forward(); // Start the animation again
 
@@ -162,6 +173,12 @@ class _GamePageState extends State<GamePage>
     });
   }
 
+  Future<Image> _getImageAsset(String assetPath) async {
+    final ByteData data = await rootBundle.load(assetPath);
+    final Uint8List bytes = data.buffer.asUint8List();
+    return Image.memory(bytes);
+  }
+
   void endGame(bool win) {
     setState(() {
       gameEnded = true;
@@ -170,25 +187,38 @@ class _GamePageState extends State<GamePage>
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(win
-              ? 'Congratulations! The world is at peace.'
-              : 'Game over! The world is in chaos.'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                restartGame(); // Restart the game
-                Navigator.of(context).pop();
-              },
-              child: Text('Restart'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Close'),
-            ),
-          ],
+        return FutureBuilder(
+          future: _getImageAsset(
+              win ? 'assets/images/peace.png' : 'assets/images/chaos.png'),
+          builder: (BuildContext context, AsyncSnapshot<Image> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator(); // Placeholder while loading
+            } else if (snapshot.hasError) {
+              return Text('Error loading image');
+            } else {
+              return AlertDialog(
+                title: Text(win
+                    ? 'Congratulations! The world is at peace.'
+                    : 'Game over! The world is in chaos.'),
+                content: snapshot.data, // Show the image
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      restartGame(); // Restart the game
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('Restart'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('Close'),
+                  ),
+                ],
+              );
+            }
+          },
         );
       },
     );
@@ -215,13 +245,6 @@ class _GamePageState extends State<GamePage>
     _controller.forward().whenComplete(() {
       _controller.reverse(); // Reverse animation after 1 second
     });
-
-    // Initialize TemporalShiftPainter
-    _temporalShiftPainter = TemporalShiftPainter(
-      initialAnimationValue: _animation.value,
-      minRadius: minRadius,
-      maxRadius: maxRadius,
-    );
   }
 
   @override
@@ -270,21 +293,7 @@ class _GamePageState extends State<GamePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          title: Text('Green Destiny'),
-          bottom: PreferredSize(
-            preferredSize: Size.fromHeight(60),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              child: Text(
-                'You have the awesome power to alter probability. '
-                'You can boost or weaken impact of different scenarios '
-                'that affect global temperature positively and negatively. '
-                'Be careful, overusing your power will decrease sustainability and cause chaos.',
-                style: TextStyle(fontSize: 12, color: Colors.white),
-              ),
-            ),
-          )),
+      appBar: AppBar(title: Text('Green Destiny')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -293,13 +302,15 @@ class _GamePageState extends State<GamePage>
               'Scenario: $currentScenario',
               style: TextStyle(fontSize: 20),
             ),
-            SizedBox(height: 20),
+            SizedBox(
+                height:
+                    kToolbarHeight), // Add space equal to the height of the AppBar
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Tooltip(
                   message:
-                      'Boost or weaken scenarios to reduce or increase global temperature', // Tooltip message
+                      'Boost or weaken outcomes to reduce or increase global temperature', // Tooltip message
                   child: Text(
                     'Global Temperature:',
                     textAlign: TextAlign.center,
@@ -419,11 +430,13 @@ class _GamePageState extends State<GamePage>
               child: AnimatedBuilder(
                 animation: _controller,
                 builder: (context, child) {
-                  _temporalShiftPainter.animationValue = _animation.value;
                   return CustomPaint(
                     size: Size(maxRadius,
                         maxRadius), // Size of the custom graphical object
-                    painter: _temporalShiftPainter,
+                    painter: TemporalShiftPainter(_animation.value,
+                        minRadius: minRadius,
+                        maxRadius: maxRadius,
+                        clockwiseRotation: clockwiseRotation),
                   );
                 },
               ),

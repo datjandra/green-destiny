@@ -21,17 +21,17 @@ class SplashScreen extends StatelessWidget {
             _buildInstructionBullet(
                 'Step into the shoes of Green Destiny, a hero with the awesome power to alter probabilities.'),
             _buildInstructionBullet(
-                'Face different challenges affecting the world\'s temperature and sustainability.'),
+                'Face different scenarios affecting the world\'s temperature and sustainability in negative or positive ways.'),
             _buildInstructionBullet(
-                'Use your power to boost or weaken the impact of each challenge, or choose to do nothing.'),
+                'Use your power to boost or weaken the impact of each scenario, or choose to do nothing.'),
             _buildInstructionBullet(
                 'Your power grows stronger each time you use it.'),
             _buildInstructionBullet(
-                'Keep in mind that tougher challenges require a higher power level to influence.'),
+                'Keep in mind that tougher scenarios require a higher power level to influence.'),
             _buildInstructionBullet(
                 'Be careful! Using your power too much drains the planet\'s resources and causes chaos.'),
             _buildInstructionBullet(
-                'Your mission is to lower the global temperature using your unique abilities.'),
+                'Lower the global temperature by boosting positive events and weakening negative scenarios using your unique abilities.'),
             _buildInstructionBullet(
                 'But watch out! Letting the temperature rise too much will bring chaos.'),
             SizedBox(height: 20),

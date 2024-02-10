@@ -3,27 +3,15 @@ import 'dart:ui';
 import 'dart:math';
 
 class TemporalShiftPainter extends CustomPainter {
-  late double _animationValue;
+  final double animationValue;
   final double minRadius;
   final double maxRadius;
-  bool clockwiseRotation;
+  final bool Function() clockwiseRotation;
 
-  TemporalShiftPainter(
+  TemporalShiftPainter(this.animationValue,
       {required this.minRadius,
       required this.maxRadius,
-      required double initialAnimationValue,
-      this.clockwiseRotation = true})
-      : _animationValue = initialAnimationValue;
-
-  double get animationValue => _animationValue;
-  set animationValue(double value) {
-    _animationValue = value;
-    // Trigger a repaint by calling `markNeedsRepaint()`
-  }
-
-  void setClockwiseRotation(bool value) {
-    clockwiseRotation = value;
-  }
+      required this.clockwiseRotation});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -35,29 +23,28 @@ class TemporalShiftPainter extends CustomPainter {
     }
 
     final Offset center = Offset(size.width / 2, size.height / 2);
+    final Paint centerPaint = Paint()..color = Colors.green;
+    canvas.drawCircle(center, radius, centerPaint);
 
+// Draw the glow effect with variable opacity based on radius
+    final double glowOpacity =
+        1.0 - (radius - minRadius) / (maxRadius - minRadius);
     final Paint glowPaint = Paint()
-      ..color = Colors.green.withOpacity(0.5)
-      ..maskFilter = MaskFilter.blur(BlurStyle.outer, 10.0);
-
-    final Paint particlePaint = Paint()..color = Colors.green;
-
-    // Draw the glow effect
-    canvas.drawCircle(center, radius, glowPaint);
+      ..color = Colors.green.withOpacity(glowOpacity.clamp(0.0, 1.0));
+    final Paint particlePaint = glowPaint;
 
     // Draw particles within the glow effect and rotate them around the big circle
-    const int numParticles = 20;
+    const int numParticles = 8;
     const double angleIncrement = 2 * pi / numParticles;
     const double particleRadius = 5.0;
     double particleDistance = radius * 1.5;
 
-    const bool clockwiseRotation = false;
-
+    bool clockwise = clockwiseRotation();
     for (int i = 0; i < numParticles; i++) {
       double angle = i * angleIncrement;
       double rotationAngle = angle;
 
-      if (clockwiseRotation) {
+      if (clockwise) {
         rotationAngle += 2 * pi * animationValue;
       } else {
         rotationAngle -= 2 * pi * animationValue;
