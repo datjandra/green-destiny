@@ -43,8 +43,8 @@ class SplashScreen extends StatelessWidget {
                     'Encounter various scenarios affecting global temperatures and sustainability. '
                     'Boost positive events that reduce global temperatures and weaken negative '
                     'ones that raise them. You can choose to do nothing, but beware of chaos from high temperatures. '
-                    'Your power strengthens with each use, but more influential scenarios require more power to '
-                    'change. Be careful, as your power affects the fabric of reality itself and excessive use drains resources and leads to chaos.',
+                    'Your power may strengthen with each use, but more influential scenarios require more power to '
+                    'alter. Be careful, as your power affects the fabric of reality and excessive use drains resources and leads to chaos.',
                     style: TextStyle(fontSize: 16),
                   ),
                   SizedBox(height: 20),
@@ -53,7 +53,14 @@ class SplashScreen extends StatelessWidget {
                       navigateToGamePage(
                           context); // Invoke the callback function
                     },
-                    child: Text('Start'),
+                    child: Row(
+                        mainAxisSize: MainAxisSize
+                            .min, // Ensures the Row takes as little space as possible
+                        children: [
+                          Icon(Icons.play_arrow), // Icon
+                          SizedBox(width: 8), // Spacer between icon and text
+                          Text('Start') // Text
+                        ]),
                   ),
                 ],
               ),

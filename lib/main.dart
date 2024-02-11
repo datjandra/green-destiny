@@ -439,7 +439,15 @@ class _GamePageState extends State<GamePage>
                       onPressed: () {
                         executeAction(true, currentScenario, 1);
                       },
-                      child: Text('Boost'),
+                      child: Row(
+                          mainAxisSize: MainAxisSize
+                              .min, // Ensures the Row takes as little space as possible
+                          children: [
+                            Icon(Icons.add_circle_outline), // Icon
+                            SizedBox(width: 8), // Spacer between icon and text
+                            Text('Boost',
+                                style: new TextStyle(fontSize: 10)) // Text
+                          ]),
                     ),
                   ),
                 ),
@@ -451,21 +459,36 @@ class _GamePageState extends State<GamePage>
                       onPressed: () {
                         executeAction(true, currentScenario, -1);
                       },
-                      child: Text('Weaken'),
+                      child: Row(
+                          mainAxisSize: MainAxisSize
+                              .min, // Ensures the Row takes as little space as possible
+                          children: [
+                            Icon(Icons.remove_circle_outline), // Icon
+                            SizedBox(width: 8), // Spacer between icon and text
+                            Text('Weaken',
+                                style: new TextStyle(fontSize: 10)) // Text
+                          ]),
                     ),
                   ),
                 ),
                 Expanded(
                   child: Padding(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 8.0), // Adjust the horizontal spacing
-                    child: ElevatedButton(
-                      onPressed: () {
-                        executeAction(false, currentScenario, 0);
-                      },
-                      child: Text('Nothing'),
-                    ),
-                  ),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 8.0), // Adjust the horizontal spacing
+                      child: ElevatedButton(
+                          onPressed: () {
+                            executeAction(false, currentScenario, 0);
+                          },
+                          child: Row(
+                              mainAxisSize: MainAxisSize
+                                  .min, // Ensures the Row takes as little space as possible
+                              children: [
+                                Icon(Icons.not_interested), // Icon
+                                SizedBox(
+                                    width: 8), // Spacer between icon and text
+                                Text('Nothing',
+                                    style: new TextStyle(fontSize: 10)) // Text
+                              ]))),
                 ),
               ],
             ),
