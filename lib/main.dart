@@ -2,9 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:math';
 
-import 'scenario.dart';
+import 'scenarios.dart';
 import 'painter.dart';
 import 'splash.dart';
+
+// Define an enum with the desired options
+enum Difficulty {
+  Normal,
+  Harder,
+  Hardest,
+}
 
 void main() {
   runApp(MyApp());
@@ -263,13 +270,36 @@ class _GamePageState extends State<GamePage>
     super.dispose();
   }
 
-  void restartGame() {
+  void restartGame({Difficulty difficulty = Difficulty.Normal}) {
     setState(() {
-      globalTemperature = 15.0; // Reset global temperature
-      globalSustainabilityIndex = 100.0; // Reset global sustainability index
-      playerProbabilityPowerLevel = 1.0; // Reset probability power level
-      sustainabilityOveruseFactor = 0.1;
       gameEnded = false; // Reset game state
+
+      switch (difficulty) {
+        case Difficulty.Harder:
+          globalTemperature = 16.0; // Reset global temperature
+          globalSustainabilityIndex = 75.0; // Reset global sustainability index
+          playerProbabilityPowerLevel = 0.5; // Reset probability power level
+          sustainabilityOveruseFactor = 0.25;
+          print("Restarting game with hard difficulty");
+          break;
+
+        case Difficulty.Hardest:
+          globalTemperature = 17.0; // Reset global temperature
+          globalSustainabilityIndex = 50.0; // Reset global sustainability index
+          playerProbabilityPowerLevel = 0.25; // Reset probability power level
+          sustainabilityOveruseFactor = 0.5;
+          print("Restarting game with hardest difficulty");
+          break;
+
+        default:
+          globalTemperature = 15.0; // Reset global temperature
+          globalSustainabilityIndex =
+              100.0; // Reset global sustainability index
+          playerProbabilityPowerLevel = 1.0; // Reset probability power level
+          sustainabilityOveruseFactor = 0.1;
+          print("Restarting game with normal difficulty");
+          break;
+      }
     });
     selectRandomScenario(); // Select a new random scenario
   }
@@ -297,6 +327,12 @@ class _GamePageState extends State<GamePage>
       return Colors.green;
     } else {
       return Colors.yellow;
+    }
+  }
+
+  void handleRestartGame(Difficulty? selectedValue) {
+    if (selectedValue != null) {
+      restartGame(difficulty: selectedValue);
     }
   }
 
@@ -452,12 +488,26 @@ class _GamePageState extends State<GamePage>
               ),
             ),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                restartGame();
-              },
-              child: Text('Restart'),
-            ),
+
+            Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Restart'),
+                  SizedBox(width: 8), // Adjust spacing as needed
+                  DropdownButton<Difficulty>(
+                    value: Difficulty.Normal,
+                    onChanged: handleRestartGame,
+                    items: Difficulty.values.map((Difficulty value) {
+                      return DropdownMenuItem<Difficulty>(
+                        value: value,
+                        child: Text(value.toString().split('.').last),
+                      );
+                    }).toList(),
+                  )
+                ],
+              ),
+            )
           ],
         ),
       ),

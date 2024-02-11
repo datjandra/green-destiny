@@ -34,12 +34,12 @@ class SplashScreen extends StatelessWidget {
                       )),
                   SizedBox(height: 20),
                   Text(
-                    'Welcome to Green Destiny!',
+                    'Welcome, Green Destiny!',
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 20),
                   Text(
-                    'Your mission is to lower global temperatures using probability-altering powers. '
+                    'Your mission is to lower global temperatures with your awesome probability-altering powers. '
                     'Encounter various scenarios affecting global temperatures and sustainability. '
                     'Boost positive events that reduce global temperatures and weaken negative '
                     'ones that raise them. You can choose to do nothing, but beware of chaos from high temperatures. '
