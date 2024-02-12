@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+
 import 'dart:math';
 
 import 'scenarios.dart';
 import 'painter.dart';
 import 'splash.dart';
+import 'locations.dart';
 
 // Define an enum with the desired options
 enum Difficulty {
@@ -51,6 +55,7 @@ class _GamePageState extends State<GamePage>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
+  late MapController _mapController; // Initialize MapController
 
   final double minRadius = 10.0; // Set min radius value
   final double maxRadius = 20.0; // Set max radius value
@@ -66,10 +71,19 @@ class _GamePageState extends State<GamePage>
   double sustainabilityOveruseFactor =
       0.1; // Factor to adjust globalSustainabilityIndex when power overused
 
-  String currentScenario = ''; // Initial scenario
+  Scenario currentScenario = getRandomScenario(); // Initial scenario
   bool gameEnded = false; // Flag to track game state
   bool clockwiseDir = true;
   final List<Scenario> scenarios; // Add scenarios as a class variable
+
+  final double eventLatitude = 51.5; // Variable for latitude
+  final double eventLongitude = -0.09; // Variable for longitude
+  final Color positiveEventColor =
+      Colors.green.withOpacity(0.5); // Variable for circle color
+  final Color negativeEventColor =
+      Colors.red.withOpacity(0.5); // Variable for circle color
+  Color eventColor = Color.fromRGBO(255, 0, 0, 0.5);
+  LatLng eventLocation = getRandomLocation();
 
   _GamePageState(
       {required this.scenarios}); // Constructor with scenarios argument
@@ -78,13 +92,10 @@ class _GamePageState extends State<GamePage>
     return clockwiseDir;
   }
 
-  void executeAction(
-      bool alterProbability, String selectedScenario, int direction) {
+  void executeAction(bool alterProbability, int direction) {
     if (gameEnded) {
       restartGame();
     }
-
-    Scenario scenario = scenarios.firstWhere((s) => s.name == selectedScenario);
 
     // Execute action based on scenario and power level
     if (alterProbability) {
@@ -98,13 +109,13 @@ class _GamePageState extends State<GamePage>
       _controller.forward(); // Start the animation again
 
       sustainabilityOveruseFactor += 0.1;
-      double successProbability =
-          calculateSuccessProbability(scenario, playerProbabilityPowerLevel);
+      double successProbability = calculateSuccessProbability(
+          currentScenario, playerProbabilityPowerLevel);
       if (Random().nextDouble() < successProbability) {
-        adjustGlobalTemperature(scenario.temperatureImpact *
+        adjustGlobalTemperature(currentScenario.temperatureImpact *
             playerProbabilityPowerLevel *
             direction);
-        updateGlobalSustainabilityIndex(scenario.sustainabilityImpact *
+        updateGlobalSustainabilityIndex(currentScenario.sustainabilityImpact *
             playerProbabilityPowerLevel *
             direction);
         // Increase playerProbabilityPowerLevel after every successful alteration
@@ -112,13 +123,13 @@ class _GamePageState extends State<GamePage>
       } else {
         print('Alteration failed!');
         // Same logic as do nothing
-        adjustGlobalTemperature(scenario.temperatureImpact);
-        updateGlobalSustainabilityIndex(scenario.sustainabilityImpact);
+        adjustGlobalTemperature(currentScenario.temperatureImpact);
+        updateGlobalSustainabilityIndex(currentScenario.sustainabilityImpact);
       }
     } else {
       print('Player chose not to alter probability.');
-      adjustGlobalTemperature(scenario.temperatureImpact);
-      updateGlobalSustainabilityIndex(scenario.sustainabilityImpact);
+      adjustGlobalTemperature(currentScenario.temperatureImpact);
+      updateGlobalSustainabilityIndex(currentScenario.sustainabilityImpact);
     }
 
     // Check win/loss conditions
@@ -244,7 +255,7 @@ class _GamePageState extends State<GamePage>
   @override
   void initState() {
     super.initState();
-    selectRandomScenario(); // Select a random scenario when the game page is initialized
+    _mapController = MapController();
 
     _controller = AnimationController(
       vsync: this,
@@ -262,6 +273,8 @@ class _GamePageState extends State<GamePage>
     _controller.forward().whenComplete(() {
       _controller.reverse(); // Reverse animation after 1 second
     });
+
+    selectRandomScenario(); // Select a random scenario when the game page is initialized
   }
 
   @override
@@ -306,7 +319,17 @@ class _GamePageState extends State<GamePage>
 
   void selectRandomScenario() {
     setState(() {
-      currentScenario = scenarios[Random().nextInt(scenarios.length)].name;
+      String scenarioName = scenarios[Random().nextInt(scenarios.length)].name;
+      currentScenario = scenarios.firstWhere((s) => s.name == scenarioName);
+      if (currentScenario.temperatureImpact <= 0) {
+        eventColor = positiveEventColor;
+      } else {
+        eventColor = negativeEventColor;
+      }
+
+      eventLocation = getRandomLocation();
+      _mapController.onReady
+          .then((value) => _mapController.move(eventLocation, 10));
     });
   }
 
@@ -345,88 +368,150 @@ class _GamePageState extends State<GamePage>
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              'Scenario: $currentScenario',
+              currentScenario.name,
               style: TextStyle(fontSize: 20),
             ),
-            SizedBox(
-                height:
-                    kToolbarHeight), // Add space equal to the height of the AppBar
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Tooltip(
-                  message:
-                      'Boost or weaken outcomes to reduce or increase global temperature', // Tooltip message
-                  child: Text(
-                    'Global Temperature:',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 20),
+            SizedBox(height: 10),
+            Container(
+              constraints:
+                  BoxConstraints(maxHeight: 300), // Set the maximum height
+              child: FlutterMap(
+                mapController: _mapController,
+                options: MapOptions(center: eventLocation, zoom: 10.0),
+                layers: [
+                  TileLayerOptions(
+                    urlTemplate:
+                        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    subdomains: ['a', 'b', 'c'],
                   ),
-                ),
-                SizedBox(
-                    height:
-                        8), // Add some space between the text and the progress bar
-                LinearProgressIndicator(
-                  value: globalTemperature / 20,
-                  backgroundColor:
-                      Colors.grey[300], // Background color of the progress bar
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                      determineGlobalTemperatureIndexColor(
-                          globalTemperature)), // Color of the progress bar
-                ),
-              ],
+                  MarkerLayerOptions(markers: [
+                    Marker(
+                      width: 400,
+                      height: 200,
+                      point: eventLocation, // Coordinates of the circle center
+                      builder: (ctx) => Container(
+                        child: Column(
+                          children: [
+                            // Semi-transparent circle
+                            Container(
+                              width: 100.0 *
+                                  currentScenario.temperatureImpact.abs(),
+                              height: 100.0 *
+                                  currentScenario.temperatureImpact.abs(),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color:
+                                    eventColor, // Adjust opacity and color as needed
+                              ),
+                            ),
+                            // Text
+                            // Text with custom background and text color
+                            SizedBox(height: 10),
+
+                            ConstrainedBox(
+                              constraints: BoxConstraints(
+                                  maxWidth: 320, // Set maximum width
+                                  maxHeight: 100 // Set maximum height
+                                  ),
+                              child: Container(
+                                  color: Colors.black,
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Column(
+                                      mainAxisSize: MainAxisSize
+                                          .min, // Ensure the column shrinks to fit its content
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              'Global Temperature:',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: 150,
+                                              child: LinearProgressIndicator(
+                                                  value:
+                                                      globalTemperature / 20.0,
+                                                  backgroundColor: Colors.grey,
+                                                  valueColor:
+                                                      AlwaysStoppedAnimation<
+                                                          Color>(
+                                                    determineGlobalTemperatureIndexColor(
+                                                        globalTemperature),
+                                                  )),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(height: 5),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              'Sustainability Index:',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: 150,
+                                              child: LinearProgressIndicator(
+                                                  value:
+                                                      globalSustainabilityIndex /
+                                                          100.0,
+                                                  backgroundColor: Colors.grey,
+                                                  valueColor:
+                                                      AlwaysStoppedAnimation<
+                                                          Color>(
+                                                    determineGlobalSustainabilityIndexColor(
+                                                        globalSustainabilityIndex),
+                                                  )),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(height: 5),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              'Power Level:',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: 150,
+                                              child: LinearProgressIndicator(
+                                                  value:
+                                                      playerProbabilityPowerLevel /
+                                                          5.0,
+                                                  backgroundColor: Colors.grey,
+                                                  valueColor:
+                                                      AlwaysStoppedAnimation<
+                                                          Color>(
+                                                    Colors.green,
+                                                  )),
+                                            ),
+                                          ],
+                                        )
+                                      ])),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ]),
+                ],
+              ),
             ),
             SizedBox(height: 20),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Tooltip(
-                  message:
-                      'Overusing your power reduces sustainability', // Tooltip message
-                  child: Text(
-                    'Global Sustainability Index:',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ),
-                SizedBox(
-                    height:
-                        8), // Add some space between the text and the progress bar
-                LinearProgressIndicator(
-                  value: globalSustainabilityIndex / 100,
-                  backgroundColor:
-                      Colors.grey[300], // Background color of the progress bar
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                      determineGlobalSustainabilityIndexColor(
-                          globalSustainabilityIndex)), // Color of the progress bar
-                ),
-              ],
-            ),
-            SizedBox(height: 20),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Tooltip(
-                  message: 'Your power increases with usage', // Tooltip message
-                  child: Text(
-                    'Probability Power Level:',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ),
-                SizedBox(
-                    height:
-                        8), // Add some space between the text and the progress bar
-                LinearProgressIndicator(
-                  value: playerProbabilityPowerLevel / 5,
-                  backgroundColor:
-                      Colors.grey[300], // Background color of the progress bar
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                      Colors.green), // Color of the progress bar
-                ),
-              ],
-            ),
-            SizedBox(height: 40),
             Row(
               mainAxisAlignment: MainAxisAlignment
                   .spaceEvenly, // Adjust the spacing between buttons
@@ -437,7 +522,7 @@ class _GamePageState extends State<GamePage>
                         horizontal: 8.0), // Adjust the horizontal spacing
                     child: ElevatedButton(
                       onPressed: () {
-                        executeAction(true, currentScenario, 1);
+                        executeAction(true, 1);
                       },
                       child: Row(
                           mainAxisSize: MainAxisSize
@@ -457,7 +542,7 @@ class _GamePageState extends State<GamePage>
                         horizontal: 8.0), // Adjust the horizontal spacing
                     child: ElevatedButton(
                       onPressed: () {
-                        executeAction(true, currentScenario, -1);
+                        executeAction(true, -1);
                       },
                       child: Row(
                           mainAxisSize: MainAxisSize
@@ -477,7 +562,7 @@ class _GamePageState extends State<GamePage>
                           horizontal: 8.0), // Adjust the horizontal spacing
                       child: ElevatedButton(
                           onPressed: () {
-                            executeAction(false, currentScenario, 0);
+                            executeAction(false, 0);
                           },
                           child: Row(
                               mainAxisSize: MainAxisSize
@@ -511,7 +596,6 @@ class _GamePageState extends State<GamePage>
               ),
             ),
             SizedBox(height: 20),
-
             Center(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 List<Scenario> scenarios = [
   Scenario(
       name: 'Recycling campaign',
@@ -35,7 +37,7 @@ List<Scenario> scenarios = [
     sustainabilityImpact: -0.1, // slightly reduce sustainability
   ),
   Scenario(
-    name: 'Deforestation',
+    name: 'Expansion of Transportation Networks',
     temperatureImpact: 0.3, // slightly raise temperature
     sustainabilityImpact: -0.15, // slightly reduce sustainability
   ),
@@ -70,32 +72,32 @@ List<Scenario> scenarios = [
     sustainabilityImpact: -0.25, // Moderate negative impact on sustainability
   ),
   Scenario(
-    name: 'Expansion of Coal Mining',
+    name: 'Expansion of Fossil Fuel Infrastructure',
     temperatureImpact: 0.7, // Increase global temperature moderately
     sustainabilityImpact: -0.3, // Moderate negative impact on sustainability
   ),
   Scenario(
-    name: 'Oil Spill Pollution',
+    name: 'Waste Management and Landfill Methane Emissions',
     temperatureImpact: 0.4, // Increase global temperature moderately
     sustainabilityImpact: -0.18, // Moderate negative impact on sustainability
   ),
   Scenario(
-    name: 'Urban Sprawl',
+    name: 'Altered Water Management Practices',
     temperatureImpact: 0.3, // Increase global temperature moderately
     sustainabilityImpact: -0.15, // Moderate negative impact on sustainability
   ),
   Scenario(
-    name: 'Intensive Livestock Farming',
+    name: 'Droughts and Water Scarcity',
     temperatureImpact: 0.6, // Increase global temperature moderately
     sustainabilityImpact: -0.28, // Moderate negative impact on sustainability
   ),
   Scenario(
-    name: 'Expansion of Oil Drilling',
+    name: 'Intensification of Extreme Weather Events',
     temperatureImpact: 0.8, // Increase global temperature signficantly
     sustainabilityImpact: -0.35, // Decrease sustainability significantly
   ),
   Scenario(
-    name: 'Deforestation for Agriculture',
+    name: 'Heatwaves and Urban Heat Islands',
     temperatureImpact: 0.9, // Increase global temperature signficantly
     sustainabilityImpact: -0.4, // Decrease sustainability significantly
   ),
@@ -125,4 +127,10 @@ class Scenario {
       {required this.name,
       required this.temperatureImpact,
       required this.sustainabilityImpact});
+}
+
+Scenario getRandomScenario() {
+  final random = Random();
+  final index = random.nextInt(scenarios.length);
+  return scenarios[index];
 }
