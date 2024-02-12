@@ -11,9 +11,9 @@ import 'locations.dart';
 
 // Define an enum with the desired options
 enum Difficulty {
-  Normal,
-  Harder,
-  Hardest,
+  normal,
+  harder,
+  hardest,
 }
 
 class GamePage extends StatefulWidget {
@@ -57,10 +57,12 @@ class _GamePageState extends State<GamePage>
   final Color negativeEventColor =
       Colors.red.withOpacity(0.5); // Variable for circle color
   Color eventColor = Color.fromRGBO(255, 0, 0, 0.5);
-  LatLng eventLocation = getRandomLocation();
+  late LatLng eventLocation;
 
-  _GamePageState(
-      {required this.scenarios}); // Constructor with scenarios argument
+  _GamePageState({required this.scenarios}) {
+    // Initialize eventLocation here using scenarios or any other logic
+    eventLocation = getRandomLocationByType(currentScenario.locationType);
+  }
 
   bool clockwiseRotation() {
     return clockwiseDir;
@@ -172,6 +174,10 @@ class _GamePageState extends State<GamePage>
   }
 
   void endGame(bool win) {
+    if (gameEnded) {
+      return;
+    }
+
     setState(() {
       gameEnded = true;
     });
@@ -257,12 +263,12 @@ class _GamePageState extends State<GamePage>
     super.dispose();
   }
 
-  void restartGame({Difficulty difficulty = Difficulty.Normal}) {
+  void restartGame({Difficulty difficulty = Difficulty.normal}) {
     setState(() {
       gameEnded = false; // Reset game state
 
       switch (difficulty) {
-        case Difficulty.Harder:
+        case Difficulty.harder:
           globalTemperature = 16.0; // Reset global temperature
           globalSustainabilityIndex = 75.0; // Reset global sustainability index
           playerProbabilityPowerLevel = 0.5; // Reset probability power level
@@ -270,7 +276,7 @@ class _GamePageState extends State<GamePage>
           print("Restarting game with hard difficulty");
           break;
 
-        case Difficulty.Hardest:
+        case Difficulty.hardest:
           globalTemperature = 17.0; // Reset global temperature
           globalSustainabilityIndex = 50.0; // Reset global sustainability index
           playerProbabilityPowerLevel = 0.25; // Reset probability power level
@@ -301,7 +307,7 @@ class _GamePageState extends State<GamePage>
         eventColor = negativeEventColor;
       }
 
-      eventLocation = getRandomLocation();
+      eventLocation = getRandomLocationByType(currentScenario.locationType);
       _mapController.onReady
           .then((value) => _mapController.move(eventLocation, 10));
     });
@@ -577,7 +583,7 @@ class _GamePageState extends State<GamePage>
                   Text('Restart', style: Theme.of(context).textTheme.bodyLarge),
                   SizedBox(width: 8), // Adjust spacing as needed
                   DropdownButton<Difficulty>(
-                    value: Difficulty.Normal,
+                    value: Difficulty.normal,
                     onChanged: handleRestartGame,
                     items: Difficulty.values.map((Difficulty value) {
                       return DropdownMenuItem<Difficulty>(
