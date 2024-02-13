@@ -3,6 +3,7 @@ import 'dart:math';
 import 'locations.dart';
 
 List<Scenario> scenarios = [
+  // Low impact scenarios
   Scenario(
       name: 'Recycling Campaign',
       temperatureImpact: -0.3,
@@ -18,31 +19,6 @@ List<Scenario> scenarios = [
       temperatureImpact: -0.4,
       sustainabilityImpact: 0.08,
       locationType: LocationType.rural),
-  Scenario(
-      name: 'Implementation of Solar Energy Projects',
-      temperatureImpact: -0.6, // Moderate impact on reducing temperature
-      sustainabilityImpact:
-          0.2, // Significant positive impact on sustainability
-      locationType: LocationType.desert),
-  Scenario(
-      name: 'Rural Energy Efficiency Initiatives',
-      temperatureImpact: -0.5, // Moderate impact on reducing temperature
-      sustainabilityImpact: 0.12, // Moderate positive impact on sustainability
-      locationType: LocationType.rural),
-  Scenario(
-      name: 'Creation of Coastal Protected Areas and Marine Reserves',
-      temperatureImpact:
-          -0.9, // Complex feat with high impact on reducing temperature
-      sustainabilityImpact:
-          0.25, // Significant positive impact on sustainability
-      locationType: LocationType.coastal),
-  Scenario(
-      name: 'Government Policy on Carbon Emissions',
-      temperatureImpact:
-          -0.7, // Complex feat with moderate impact on reducing temperature
-      sustainabilityImpact:
-          0.3, // Significant positive impact on sustainability
-      locationType: LocationType.urban),
   Scenario(
       name: 'Burning of Agricultural Residues',
       temperatureImpact: 0.2, // slightly raise temperature
@@ -73,6 +49,25 @@ List<Scenario> scenarios = [
       temperatureImpact: 0.15, // Increase global temperature slightly
       sustainabilityImpact: -0.06, // Reduce sustainability slightly
       locationType: LocationType.rural),
+  // Moderate impact scenarios
+  Scenario(
+      name: 'Implementation of Solar Energy Projects',
+      temperatureImpact: -0.6, // Moderate impact on reducing temperature
+      sustainabilityImpact:
+          0.2, // Significant positive impact on sustainability
+      locationType: LocationType.desert),
+  Scenario(
+      name: 'Rural Energy Efficiency Initiatives',
+      temperatureImpact: -0.5, // Moderate impact on reducing temperature
+      sustainabilityImpact: 0.12, // Moderate positive impact on sustainability
+      locationType: LocationType.rural),
+  Scenario(
+      name: 'Government Policy on Carbon Emissions',
+      temperatureImpact:
+          -0.7, // Complex feat with moderate impact on reducing temperature
+      sustainabilityImpact:
+          0.3, // Significant positive impact on sustainability
+      locationType: LocationType.urban),
   Scenario(
       name: 'Commercial Logging and Clearcutting',
       temperatureImpact: 0.5, // Increase global temperature moderately
@@ -90,7 +85,7 @@ List<Scenario> scenarios = [
       locationType: LocationType.forest),
   Scenario(
       name: 'Intensive Livestock Grazing',
-      temperatureImpact: 0.4, // Increase global temperature moderately
+      temperatureImpact: 0.45, // Increase global temperature moderately
       sustainabilityImpact: -0.18, // Moderate negative impact on sustainability
       locationType: LocationType.desert),
   Scenario(
@@ -106,7 +101,35 @@ List<Scenario> scenarios = [
   Scenario(
       name: 'Coastal Urbanization and Infrastructure Development',
       temperatureImpact: 0.55, // Increase global temperature moderately
-      sustainabilityImpact: -0.30, // Moderate negative impact on sustainability
+      sustainabilityImpact: -0.3, // Moderate negative impact on sustainability
+      locationType: LocationType.coastal),
+  Scenario(
+      name: 'Investment in Coastal Renewable Energy Projects',
+      temperatureImpact: -0.5,
+      sustainabilityImpact: 0.3,
+      locationType: LocationType.coastal),
+  Scenario(
+      name: 'Intensive Use of Chemical Fertilizers and Pesticides',
+      temperatureImpact: 0.7,
+      sustainabilityImpact: -0.3,
+      locationType: LocationType.rural),
+  // high-impact scenarios
+  Scenario(
+      name: 'Conversion of Peatlands and Wetlands for Agriculture',
+      temperatureImpact: 0.8, // Increaes global temperature moderately
+      sustainabilityImpact: -0.2, // Decrease sustainability significantly
+      locationType: LocationType.rural),
+  Scenario(
+      name: 'Agroforestry and Silvopasture Practices',
+      temperatureImpact: -0.8, // Increaes global temperature moderately
+      sustainabilityImpact: 0.35, // Decrease sustainability significantly
+      locationType: LocationType.rural),
+  Scenario(
+      name: 'Creation of Coastal Protected Areas and Marine Reserves',
+      temperatureImpact:
+          -0.9, // Complex feat with high impact on reducing temperature
+      sustainabilityImpact:
+          0.25, // Significant positive impact on sustainability
       locationType: LocationType.coastal),
   Scenario(
       name: 'Deforestation for Agriculture',
@@ -119,11 +142,6 @@ List<Scenario> scenarios = [
       sustainabilityImpact: -0.4, // Decrease sustainability significantly
       locationType: LocationType.urban),
   Scenario(
-      name: 'Conversion of Peatlands and Wetlands for Agriculture',
-      temperatureImpact: 0.7, // Increaes global temperature moderately
-      sustainabilityImpact: -0.32, // Decrease sustainability significantly
-      locationType: LocationType.rural),
-  Scenario(
       name: 'Destruction of Coastal Vegetation for Tourism Development',
       temperatureImpact: 0.75, // Increase global temperature signficantly
       sustainabilityImpact: -0.36, // Decrease sustainability significantly
@@ -132,7 +150,12 @@ List<Scenario> scenarios = [
       name: 'Large-scale Land Conversion for Renewable Energy Projects',
       temperatureImpact: 0.85, // Increase global temperature signficantly
       sustainabilityImpact: -0.38, // Decrease sustainability significantly
-      locationType: LocationType.desert)
+      locationType: LocationType.desert),
+  Scenario(
+      name: 'Urban Sprawl and Land Use Conversion',
+      temperatureImpact: 0.8,
+      sustainabilityImpact: -0.3,
+      locationType: LocationType.urban)
 ];
 
 class Scenario {
