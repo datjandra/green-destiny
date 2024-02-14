@@ -412,7 +412,7 @@ class _GamePageState extends State<GamePage>
                                               ),
                                             ),
                                             SizedBox(
-                                              width: 150,
+                                              width: 100,
                                               child: LinearProgressIndicator(
                                                   value:
                                                       globalTemperature / 20.0,
@@ -439,7 +439,7 @@ class _GamePageState extends State<GamePage>
                                               ),
                                             ),
                                             SizedBox(
-                                              width: 150,
+                                              width: 100,
                                               child: LinearProgressIndicator(
                                                   value:
                                                       globalSustainabilityIndex /
@@ -467,7 +467,7 @@ class _GamePageState extends State<GamePage>
                                               ),
                                             ),
                                             SizedBox(
-                                              width: 150,
+                                              width: 100,
                                               child: LinearProgressIndicator(
                                                   value:
                                                       playerProbabilityPowerLevel /
@@ -511,7 +511,7 @@ class _GamePageState extends State<GamePage>
                             Icon(Icons.add_circle_outline), // Icon
                             SizedBox(width: 8), // Spacer between icon and text
                             Text('Boost',
-                                style: new TextStyle(fontSize: 10)) // Text
+                                style: new TextStyle(fontSize: 8)) // Text
                           ]),
                     ),
                   ),
@@ -531,7 +531,7 @@ class _GamePageState extends State<GamePage>
                             Icon(Icons.remove_circle_outline), // Icon
                             SizedBox(width: 8), // Spacer between icon and text
                             Text('Weaken',
-                                style: new TextStyle(fontSize: 10)) // Text
+                                style: new TextStyle(fontSize: 8)) // Text
                           ]),
                     ),
                   ),
@@ -552,7 +552,7 @@ class _GamePageState extends State<GamePage>
                                 SizedBox(
                                     width: 8), // Spacer between icon and text
                                 Text('Nothing',
-                                    style: new TextStyle(fontSize: 10)) // Text
+                                    style: new TextStyle(fontSize: 8)) // Text
                               ]))),
                 ),
               ],
