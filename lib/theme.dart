@@ -20,9 +20,8 @@ class GreenDestinyTheme {
 
     // Define the input decoration theme
     inputDecorationTheme: InputDecorationTheme(
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10.0),
-      ),
+      border: InputBorder.none,
+      enabledBorder: UnderlineInputBorder(),
     ),
   );
 
@@ -42,9 +41,8 @@ class GreenDestinyTheme {
 
     // Define the input decoration theme
     inputDecorationTheme: InputDecorationTheme(
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10.0),
-      ),
+      border: InputBorder.none,
+      enabledBorder: UnderlineInputBorder(),
     ),
   );
 }

@@ -8,6 +8,7 @@ import 'dart:math';
 import 'scenarios.dart';
 import 'painter.dart';
 import 'locations.dart';
+// import 'mini.dart';
 
 // Define an enum with the desired options
 enum Difficulty {
@@ -499,7 +500,7 @@ class _GamePageState extends State<GamePage>
                 Expanded(
                   child: Padding(
                     padding: EdgeInsets.symmetric(
-                        horizontal: 8.0), // Adjust the horizontal spacing
+                        horizontal: 4.0), // Adjust the horizontal spacing
                     child: ElevatedButton(
                       onPressed: () {
                         executeAction(true, 1);
@@ -509,9 +510,9 @@ class _GamePageState extends State<GamePage>
                               .min, // Ensures the Row takes as little space as possible
                           children: [
                             Icon(Icons.add_circle_outline), // Icon
-                            SizedBox(width: 8), // Spacer between icon and text
+                            SizedBox(width: 10), // Spacer between icon and text
                             Text('Boost',
-                                style: new TextStyle(fontSize: 8)) // Text
+                                style: new TextStyle(fontSize: 10)) // Text
                           ]),
                     ),
                   ),
@@ -519,7 +520,7 @@ class _GamePageState extends State<GamePage>
                 Expanded(
                   child: Padding(
                     padding: EdgeInsets.symmetric(
-                        horizontal: 8.0), // Adjust the horizontal spacing
+                        horizontal: 4.0), // Adjust the horizontal spacing
                     child: ElevatedButton(
                       onPressed: () {
                         executeAction(true, -1);
@@ -529,9 +530,9 @@ class _GamePageState extends State<GamePage>
                               .min, // Ensures the Row takes as little space as possible
                           children: [
                             Icon(Icons.remove_circle_outline), // Icon
-                            SizedBox(width: 8), // Spacer between icon and text
+                            SizedBox(width: 10), // Spacer between icon and text
                             Text('Weaken',
-                                style: new TextStyle(fontSize: 8)) // Text
+                                style: new TextStyle(fontSize: 10)) // Text
                           ]),
                     ),
                   ),
@@ -539,7 +540,7 @@ class _GamePageState extends State<GamePage>
                 Expanded(
                   child: Padding(
                       padding: EdgeInsets.symmetric(
-                          horizontal: 8.0), // Adjust the horizontal spacing
+                          horizontal: 4.0), // Adjust the horizontal spacing
                       child: ElevatedButton(
                           onPressed: () {
                             executeAction(false, 0);
@@ -550,9 +551,9 @@ class _GamePageState extends State<GamePage>
                               children: [
                                 Icon(Icons.not_interested), // Icon
                                 SizedBox(
-                                    width: 8), // Spacer between icon and text
+                                    width: 10), // Spacer between icon and text
                                 Text('Nothing',
-                                    style: new TextStyle(fontSize: 8)) // Text
+                                    style: new TextStyle(fontSize: 10)) // Text
                               ]))),
                 ),
               ],
@@ -580,6 +581,20 @@ class _GamePageState extends State<GamePage>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  /*
+                  ElevatedButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return GameDialog();
+                        },
+                      );
+                    },
+                    child: Text('Mini Game'),
+                  ),
+                  */
+
                   Text('Restart', style: Theme.of(context).textTheme.bodyLarge),
                   SizedBox(width: 8), // Adjust spacing as needed
                   DropdownButton<Difficulty>(
