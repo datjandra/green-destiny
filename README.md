@@ -1,6 +1,15 @@
-# Green Destiny
+<p align="center">
+  <img src="assets/images/portrait.png" width="320" alt="Green Destiny heroine portrait">
+</p>
 
-A strategic environmental decision-making game built with Flutter, combining fantasy martial arts themes with real-world climate and sustainability challenges. Channel your inner warrior to balance global temperature, protect ecosystems, and manage planetary resources across 30+ dynamic scenarios.
+<p align="center">
+  <em>
+    A strategic environmental decision-making game blending fantasy martial arts
+    themes with climate and sustainability challenges.
+  </em>
+</p>
+
+---
 
 ## Overview
 
