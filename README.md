@@ -9,6 +9,18 @@
   </em>
 </p>
 
+<p align="center">
+  <a href="https://datjandra.github.io/green-destiny/">
+    <img src="https://img.shields.io/badge/PLAY-LIVE_DEMO-2ea44f?style=for-the-badge" alt="Play Live Demo">
+  </a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Flutter-Web-blue?style=flat-square">
+  <img src="https://img.shields.io/badge/License-LGPL_2.1-green?style=flat-square">
+  <img src="https://img.shields.io/badge/Status-Playable-success?style=flat-square">
+</p>
+
 ---
 
 ## Overview
