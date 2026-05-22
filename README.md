@@ -4,7 +4,7 @@
 
 <p align="center">
   <em>
-    A strategic environmental decision-making game blending fantasy martial arts
+    A strategic environmental decision-making game blending fantasy 
     themes with climate and sustainability challenges.
   </em>
 </p>
